@@ -1,0 +1,12 @@
+# Disk images and their checksums are build outputs (see each sauN/scripts/).
+*.awd
+*.hd
+*.sha256
+
+# first_boot_*.sh work directories (MAME logs, console captures).
+first_boot/
+
+# The release cartridges (downloaded from bitsavers, see README.md) and what
+# scripts/unpack_sr10.2.sh unpacks from them.
+tapes/
+cache/
