@@ -12,7 +12,8 @@ that build each one from the original release files.
 Each image directory holds `scripts/`, the commands that build its
 image.  The images are not in the repository (`.gitignore` excludes
 `*.awd`, `*.hd` and their `.sha256` checksums): build them with the
-scripts.
+scripts, or download the finished images from the repository's GitHub
+releases.
 
 The two images are in different formats because MAME's two machines use
 different disk devices.  The DN300's disk (`.awd`, "Apollo Winchester
@@ -194,3 +195,33 @@ be before 2015, where the Domain/OS clock ends, and no more than a
 minute behind the label's last valid time, which the first boot's
 shutdown left at 1991-06-01 12:08 (the first boot runs with the calendar
 at 1991-06-01 12:00).
+
+## Releases
+
+`scripts/release.sh <tag>` builds every image, runs its first boot,
+compresses it with `xz -9e`, and uploads the compressed images and
+their `.sha256` checksums as assets of the GitHub release `<tag>`:
+
+    git tag v1 && git push origin v1
+    gh release create v1 --title v1 --notes '...'
+    scripts/release.sh v1
+
+The working tree must be clean and checked out at the tag, and the
+release must already exist; all of that is checked before anything is
+built.  The images are built in `dist/<tag>/` (ignored by git) with
+`SOURCE_DATE_EPOCH` 675734400 unless it is set, along with each stage's
+log.  Assets already on the release with the same names are replaced.
+The build stage is reproducible but the first boot is not (the node
+writes its registry and the label's times as it runs), so the checksums
+on a release identify those images, not what a rebuild will produce.
+`NO_UPLOAD=1` builds the images without the checks and without
+uploading.
+
+To use a release's image, check and decompress it:
+
+    shasum -a 256 -c dn300_sr10.2.awd.xz.sha256
+    xz -d dn300_sr10.2.awd.xz
+
+The checksums cover the `.xz` files as downloaded.  The images compress
+well because most of each volume is free space: the 66 MB DN300 image
+to about 10 MB, the 206 MB DN2500 image to about 9 MB.

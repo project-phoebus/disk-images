@@ -10,3 +10,6 @@ first_boot/
 # scripts/unpack_sr10.2.sh unpacks from them.
 tapes/
 cache/
+
+# scripts/release.sh: the images it builds for a release.
+dist/
